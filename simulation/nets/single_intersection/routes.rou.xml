@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes>
+
+    <!-- Vehicle type: standard car -->
+    <vType id="car"
+           accel="2.6"
+           decel="4.5"
+           sigma="0.5"
+           length="5"
+           minGap="2.5"
+           maxSpeed="13.89"/>
+
+    <!-- Routes: sequence of edge IDs the car will follow -->
+    <!-- Straight through -->
+    <route id="NS" edges="N2C C2S"/>
+    <route id="SN" edges="S2C C2N"/>
+    <route id="EW" edges="E2C C2W"/>
+    <route id="WE" edges="W2C C2E"/>
+
+    <!-- Turning -->
+    <route id="NE" edges="N2C C2E"/>
+    <route id="NW" edges="N2C C2W"/>
+    <route id="SE" edges="S2C C2E"/>
+    <route id="SW" edges="S2C C2W"/>
+
+    <!-- 
+        TRAFFIC FLOWS
+        vehsPerHour = vehicles per hour on this route
+        NS/SN is heavy (600/hr) — simulating a busy main road
+        EW/WE is lighter (300/hr)
+    -->
+    <flow id="flow_NS" route="NS" begin="0" end="3600" vehsPerHour="600" type="car" departLane="best" departSpeed="max"/>
+    <flow id="flow_SN" route="SN" begin="0" end="3600" vehsPerHour="600" type="car" departLane="best" departSpeed="max"/>
+    <flow id="flow_EW" route="EW" begin="0" end="3600" vehsPerHour="300" type="car" departLane="best" departSpeed="max"/>
+    <flow id="flow_WE" route="WE" begin="0" end="3600" vehsPerHour="300" type="car" departLane="best" departSpeed="max"/>
+    <flow id="flow_NE" route="NE" begin="0" end="3600" vehsPerHour="100" type="car" departLane="best" departSpeed="max"/>
+    <flow id="flow_SW" route="SW" begin="0" end="3600" vehsPerHour="100" type="car" departLane="best" departSpeed="max"/>
+
+</routes>

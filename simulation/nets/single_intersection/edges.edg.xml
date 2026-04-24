@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  EDGES FILE (.edg.xml)
+  
+  An "edge" = one road segment (one direction of travel).
+  Roads in SUMO are one-way, so each physical road = 2 edges.
+  
+  id       = unique name for this road segment
+  from     = start node
+  to       = end node
+  numLanes = number of lanes
+  speed    = max speed in m/s  (13.89 m/s = 50 km/h)
+-->
+
+<edges>
+    <!-- North arm: cars going INTO intersection from North -->
+    <edge id="N2C" from="N" to="C" numLanes="2" speed="13.89"/>
+    <!-- North arm: cars going OUT of intersection to North -->
+    <edge id="C2N" from="C" to="N" numLanes="2" speed="13.89"/>
+
+    <!-- South arm -->
+    <edge id="S2C" from="S" to="C" numLanes="2" speed="13.89"/>
+    <edge id="C2S" from="C" to="S" numLanes="2" speed="13.89"/>
+
+    <!-- East arm -->
+    <edge id="E2C" from="E" to="C" numLanes="2" speed="13.89"/>
+    <edge id="C2E" from="C" to="E" numLanes="2" speed="13.89"/>
+
+    <!-- West arm -->
+    <edge id="W2C" from="W" to="C" numLanes="2" speed="13.89"/>
+    <edge id="C2W" from="C" to="W" numLanes="2" speed="13.89"/>
+</edges>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  NODES FILE (.nod.xml)
+  
+  A "node" = any point on the map.
+  Could be an intersection, or just the end of a road.
+  
+  type="traffic_light" = SUMO will automatically create a traffic signal here
+  type="priority"      = normal road end, no signal
+-->
+
+<nodes>
+    <!-- The center intersection — this gets a traffic light -->
+    <node id="C" x="0.0"    y="0.0"    type="traffic_light"/>
+
+    <!-- The 4 outer ends of each road (no traffic lights here) -->
+    <node id="N" x="0.0"    y="500.0"  type="priority"/>
+    <node id="S" x="0.0"    y="-500.0" type="priority"/>
+    <node id="E" x="500.0"  y="0.0"    type="priority"/>
+    <node id="W" x="-500.0" y="0.0"    type="priority"/>
+</nodes>
