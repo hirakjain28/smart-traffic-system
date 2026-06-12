@@ -1,0 +1,44 @@
+/* Import fonts from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global base styles */
+body {
+  background-color: #0A0F1E;
+  color: #F1F5F9;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
+
+/* Scrollbar styling — matches dark theme */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111827; }
+::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #38BDF8; }
+
+/* Number display class — monospace for data */
+.data-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+/* Signal light animation */
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 8px #22C55E; }
+  50%       { box-shadow: 0 0 20px #22C55E, 0 0 40px #22C55E44; }
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 8px #EF4444; }
+  50%       { box-shadow: 0 0 20px #EF4444, 0 0 40px #EF444444; }
+}
+@keyframes pulse-amber {
+  0%, 100% { box-shadow: 0 0 8px #F59E0B; }
+  50%       { box-shadow: 0 0 20px #F59E0B; }
+}
+
+.signal-green { animation: pulse-green 2s infinite; }
+.signal-red   { animation: pulse-red   2s infinite; }
+.signal-amber { animation: pulse-amber 0.8s infinite; }
