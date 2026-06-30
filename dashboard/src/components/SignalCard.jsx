@@ -16,15 +16,14 @@ const DIRECTION_ARROWS = {
   north: '↑', south: '↓', east: '→', west: '←'
 }
 
-// Which directions have green light for each phase
-const GREEN_DIRECTIONS = {
-  0: ['north', 'south'],  // Phase 0: NS Green
-  1: ['north', 'south'],  // Phase 1: NS Yellow (still show as green-ish)
-  2: ['east',  'west'],   // Phase 2: EW Green
-  3: ['east',  'west'],   // Phase 3: EW Yellow
+// India-style: only ONE direction active per phase, rotating clockwise
+const PHASE_DIRECTION = {
+  0: 'north', 1: 'north',
+  2: 'east',  3: 'east',
+  4: 'south', 5: 'south',
+  6: 'west',  7: 'west',
 }
-
-const YELLOW_PHASES = [1, 3]
+const YELLOW_PHASES = [1, 3, 5, 7]
 
 export default function SignalCard({ direction, traffic }) {
   const queue    = traffic.queue?.[direction]    ?? 0
@@ -33,10 +32,9 @@ export default function SignalCard({ direction, traffic }) {
   const phase    = traffic.phase ?? 0
 
   // Determine signal state for this direction
-  const greenDirs   = GREEN_DIRECTIONS[phase] || []
-  const isGreen     = greenDirs.includes(direction)
-  const isYellow    = YELLOW_PHASES.includes(phase) && greenDirs.includes(direction)
-
+  const isActive    = PHASE_DIRECTION[phase] === direction
+  const isYellow    = isActive && YELLOW_PHASES.includes(phase)
+  const isGreen     = isActive && !isYellow
   // Severity: how bad is the wait time?
   // 0-50s = low, 50-150s = medium, 150+ = high
   const severity = wait > 150 ? 'high' : wait > 50 ? 'medium' : 'low'

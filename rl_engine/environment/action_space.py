@@ -38,10 +38,10 @@ ACTION_KEEP   = 0  # Keep current green phase active
 ACTION_SWITCH = 1  # Switch to next phase (triggers yellow then next green)
 
 # Which phases are "green" phases (AI makes decisions here)
-GREEN_PHASES = [0, 2]
+GREEN_PHASES = [0, 2, 4, 6]
 
 # Which phases are "yellow" phases (automatic, AI skips these)
-YELLOW_PHASES = [1, 3]
+YELLOW_PHASES = [1, 3, 5, 7]
 
 # How long yellow phases last (seconds) - matches our network.net.xml
 YELLOW_DURATION = 3
@@ -50,8 +50,17 @@ YELLOW_DURATION = 3
 # 0 (NS Green)  → switch → 1 (NS Yellow) → auto → 2 (EW Green)
 # 2 (EW Green)  → switch → 3 (EW Yellow) → auto → 0 (NS Green)
 NEXT_GREEN_PHASE = {
-    0: 2,  # After NS Green comes EW Green
-    2: 0,  # After EW Green comes NS Green
+    0: 2,   # after North comes East
+    2: 4,   # after East comes South
+    4: 6,   # after South comes West
+    6: 0,   # after West comes North again
+}
+
+PHASE_NAMES = {
+    0: "North Green", 1: "North Yellow",
+    2: "East Green",  3: "East Yellow",
+    4: "South Green", 5: "South Yellow",
+    6: "West Green",  7: "West Yellow",
 }
 
 

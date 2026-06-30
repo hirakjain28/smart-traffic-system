@@ -62,6 +62,7 @@ export default function Header({ traffic, connected, onModeChange }) {
         {/* Simulation step */}
         <div className="text-xs text-muted font-mono">
           STEP <span className="text-white">{traffic.step}</span>
+          <span className="text-muted/60 ml-2">EP {traffic.episode ?? 0}</span>
         </div>
 
         {/* Running status */}

@@ -8,9 +8,12 @@
 import { useState } from 'react'
 import { overridePhase } from '../services/api'
 
+// India-style: one direction at a time, 4 independent override buttons
 const PHASES = [
-  { id: 0, name: 'NS Green',  color: 'sgreen', desc: 'North ↑ South ↓' },
-  { id: 2, name: 'EW Green',  color: 'sgreen', desc: 'East → West ←'  },
+  { id: 0, name: 'North', color: 'sgreen', desc: 'North ↑ only' },
+  { id: 2, name: 'East',  color: 'sgreen', desc: 'East → only'  },
+  { id: 4, name: 'South', color: 'sgreen', desc: 'South ↓ only' },
+  { id: 6, name: 'West',  color: 'sgreen', desc: 'West ← only'  },
 ]
 
 export default function OverridePanel({ onOverride }) {
@@ -82,21 +85,18 @@ export default function OverridePanel({ onOverride }) {
         />
       </div>
 
-      {/* Phase buttons */}
+      {/* Phase buttons — one per direction */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         {PHASES.map(p => (
           <button
             key={p.id}
             onClick={() => handleOverride(p.id)}
             disabled={loading}
-            className={`py-3 rounded-lg border text-xs font-semibold
-                       transition-all duration-200 disabled:opacity-50 ${
-              p.color === 'sgreen'
-                ? 'border-sgreen/40 text-sgreen hover:bg-sgreen/10 active:bg-sgreen/20'
-                : 'border-sred/40 text-sred hover:bg-sred/10'
-            }`}
+            className="py-3 rounded-lg border text-xs font-semibold
+                       transition-all duration-200 disabled:opacity-50
+                       border-sgreen/40 text-sgreen hover:bg-sgreen/10 active:bg-sgreen/20"
           >
-            <div className="text-sm mb-0.5">{p.name}</div>
+            <div className="text-sm mb-0.5">{p.name} Green</div>
             <div className="text-muted font-normal">{p.desc}</div>
           </button>
         ))}

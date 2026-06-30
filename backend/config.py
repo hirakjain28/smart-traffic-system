@@ -58,3 +58,14 @@ DB_PATH = str(ROOT_DIR / "data/traffic_db.sqlite")
 # ── TIMING ────────────────────────────────────────────────────────────────────
 # How often (seconds) the background simulation loop runs
 SIMULATION_TICK_INTERVAL = 0.1   # 100ms between ticks (10 ticks per second)
+
+# ── DASHBOARD PACING ──────────────────────────────────────────────────────────
+# SUMO can simulate far faster than real life — great for training,
+# but unreadable for a live dashboard. This pause makes each update
+# land at a speed a human can actually follow.
+#
+# Each "step" = DELTA_TIME (10) simulated seconds.
+# STEP_REAL_SECONDS = how many REAL seconds that step takes to display.
+#   0.3 → fast-paced demo        1.0 → comfortable default (recommended)
+#   2.0 → slow, easy to read every number
+STEP_REAL_SECONDS = 1.0

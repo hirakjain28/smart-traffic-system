@@ -117,7 +117,7 @@ export default function App() {
                           flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${
-                traffic.phase === 0 || traffic.phase === 2
+                [0, 2, 4, 6].includes(traffic.phase)
                   ? 'bg-sgreen signal-green'
                   : 'bg-samber signal-amber'
               }`}/>

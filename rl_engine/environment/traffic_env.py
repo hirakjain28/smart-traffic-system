@@ -57,6 +57,7 @@ from rl_engine.environment.action_space import (
     GREEN_PHASES, YELLOW_PHASES, YELLOW_DURATION,
     NEXT_GREEN_PHASE
 )
+from rl_engine.environment.signal_program import install_clockwise_program
 from rl_engine.environment.reward_function import calculate_reward
 from rl_engine.constraints.fairness import FairnessConstraint
 
@@ -154,6 +155,9 @@ class TrafficEnv(gym.Env):
         traci.start(sumo_cmd)
         self.sumo_running = True
 
+        # Install the India-style one-direction-at-a-time clockwise program
+        install_clockwise_program(TRAFFIC_LIGHT_ID)
+
         # ── RESET INTERNAL STATE ──────────────────────────────────────────────
         self.current_phase  = 0
         self.time_in_phase  = 0
@@ -223,13 +227,8 @@ class TrafficEnv(gym.Env):
             # If we're in a yellow phase and time is up → switch to next green
             if self.current_phase in YELLOW_PHASES:
                 if self.time_in_phase >= YELLOW_DURATION:
-                    next_green = NEXT_GREEN_PHASE.get(
-                        self.current_phase - 1,  # yellow 1 → came from green 0
-                        0
-                    )
-                    # Yellow phase 1 → next green is 2
-                    # Yellow phase 3 → next green is 0
-                    next_green = 2 if self.current_phase == 1 else 0
+                    green_before_yellow = self.current_phase - 1
+                    next_green = NEXT_GREEN_PHASE[green_before_yellow]
                     traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, next_green)
                     self.current_phase = next_green
                     self.time_in_phase = 0

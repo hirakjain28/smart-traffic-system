@@ -57,7 +57,7 @@ INCOMING_EDGES = {
 # These are realistic upper bounds for our simulation
 MAX_QUEUE    = 30     # max cars we expect in queue per road
 MAX_WAIT     = 300.0  # max total waiting time (seconds) per road
-MAX_PHASE    = 3      # phases are 0,1,2,3
+MAX_PHASE    = 7      # now 8 phases (0-7) — one direction at a time, India-style
 MAX_PHASE_TIME = 120.0  # max seconds we'd ever hold one phase
 
 
