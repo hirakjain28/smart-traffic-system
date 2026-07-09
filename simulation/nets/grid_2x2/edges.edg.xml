@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  EDGES FILE — 2x2 Grid
+
+  Every road is bidirectional, so every connection = 2 edges.
+  
+  THREE CATEGORIES OF ROADS:
+  
+  1. INTERNAL ROADS (between two intersections) — these are where
+     "green wave" coordination matters most. A vehicle leaving A
+     heading to B should ideally arrive just as B turns green.
+  
+  2. BOUNDARY ROADS (intersection to outer edge) — these feed
+     traffic INTO the grid and let it OUT, simulating a real city
+     grid connected to a larger road network.
+  
+  Naming convention: <from><to>  e.g. "A2B" = A going to B
+-->
+
+<edges>
+
+    <!-- ══════════════ INTERNAL ROADS (between intersections) ══════════════ -->
+
+    <!-- A <-> B (horizontal, top row) -->
+    <edge id="A2B" from="A" to="B" numLanes="2" speed="13.89"/>
+    <edge id="B2A" from="B" to="A" numLanes="2" speed="13.89"/>
+
+    <!-- C <-> D (horizontal, bottom row) -->
+    <edge id="C2D" from="C" to="D" numLanes="2" speed="13.89"/>
+    <edge id="D2C" from="D" to="C" numLanes="2" speed="13.89"/>
+
+    <!-- A <-> C (vertical, left column) -->
+    <edge id="A2C" from="A" to="C" numLanes="2" speed="13.89"/>
+    <edge id="C2A" from="C" to="A" numLanes="2" speed="13.89"/>
+
+    <!-- B <-> D (vertical, right column) -->
+    <edge id="B2D" from="B" to="D" numLanes="2" speed="13.89"/>
+    <edge id="D2B" from="D" to="B" numLanes="2" speed="13.89"/>
+
+    <!-- ══════════════ BOUNDARY ROADS (intersection <-> outside) ══════════════ -->
+
+    <!-- A's boundary connections -->
+    <edge id="N12A" from="N1" to="A" numLanes="2" speed="13.89"/>
+    <edge id="A2N1" from="A" to="N1" numLanes="2" speed="13.89"/>
+    <edge id="W12A" from="W1" to="A" numLanes="2" speed="13.89"/>
+    <edge id="A2W1" from="A" to="W1" numLanes="2" speed="13.89"/>
+
+    <!-- B's boundary connections -->
+    <edge id="N22B" from="N2" to="B" numLanes="2" speed="13.89"/>
+    <edge id="B2N2" from="B" to="N2" numLanes="2" speed="13.89"/>
+    <edge id="E12B" from="E1" to="B" numLanes="2" speed="13.89"/>
+    <edge id="B2E1" from="B" to="E1" numLanes="2" speed="13.89"/>
+
+    <!-- C's boundary connections -->
+    <edge id="W22C" from="W2" to="C" numLanes="2" speed="13.89"/>
+    <edge id="C2W2" from="C" to="W2" numLanes="2" speed="13.89"/>
+    <edge id="S12C" from="S1" to="C" numLanes="2" speed="13.89"/>
+    <edge id="C2S1" from="C" to="S1" numLanes="2" speed="13.89"/>
+
+    <!-- D's boundary connections -->
+    <edge id="E22D" from="E2" to="D" numLanes="2" speed="13.89"/>
+    <edge id="D2E2" from="D" to="E2" numLanes="2" speed="13.89"/>
+    <edge id="S22D" from="S2" to="D" numLanes="2" speed="13.89"/>
+    <edge id="D2S2" from="D" to="S2" numLanes="2" speed="13.89"/>
+
+</edges>

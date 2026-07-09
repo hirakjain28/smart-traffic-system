@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  NODES FILE — 2x2 Grid
+
+  4 traffic-light intersections: A, B, C, D
+  8 boundary nodes: N1, N2, S1, S2, E1, E2, W1, W2
+  
+  Grid spacing: 1000m between intersections (A to B, A to C)
+  Boundary arms: 500m beyond each intersection
+  
+  This spacing matters for the "green wave" coordination we'll build
+  later — it determines how long a vehicle takes to travel from one
+  intersection to the next, which is exactly the timing window the
+  AI needs to learn to synchronize.
+-->
+
+<nodes>
+    <!-- ── 4 TRAFFIC LIGHT INTERSECTIONS ────────────────────────────── -->
+    <node id="A" x="0.0"    y="500.0"  type="traffic_light"/>
+    <node id="B" x="1000.0" y="500.0"  type="traffic_light"/>
+    <node id="C" x="0.0"    y="0.0"    type="traffic_light"/>
+    <node id="D" x="1000.0" y="0.0"    type="traffic_light"/>
+
+    <!-- ── 8 BOUNDARY NODES (entry/exit points, no signal) ─────────────── -->
+    <!-- North boundary -->
+    <node id="N1" x="0.0"    y="1000.0"  type="priority"/>
+    <node id="N2" x="1000.0" y="1000.0"  type="priority"/>
+    <!-- South boundary -->
+    <node id="S1" x="0.0"    y="-500.0"  type="priority"/>
+    <node id="S2" x="1000.0" y="-500.0"  type="priority"/>
+    <!-- East boundary -->
+    <node id="E1" x="1500.0" y="500.0"   type="priority"/>
+    <node id="E2" x="1500.0" y="0.0"     type="priority"/>
+    <!-- West boundary -->
+    <node id="W1" x="-500.0" y="500.0"   type="priority"/>
+    <node id="W2" x="-500.0" y="0.0"     type="priority"/>
+</nodes>

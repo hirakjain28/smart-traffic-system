@@ -14,44 +14,39 @@ netconvert created, and never requires touching the XML files again.
 
 import traci
 
-# Fixed clockwise order — the AI can never change this, only how long
-# each direction's green lasts.
 CLOCKWISE_ORDER = ["north", "east", "south", "west"]
 
-INCOMING_EDGES = {
+# Default mapping for the SINGLE intersection (C)
+DEFAULT_INCOMING_EDGES = {
     "north": "N2C",
     "east":  "E2C",
     "south": "S2C",
     "west":  "W2C",
 }
 
-YELLOW_DURATION = 3
-DEFAULT_GREEN_DURATION = 30   # placeholder — the AI overrides actual timing live
+YELLOW_DURATION        = 3
+DEFAULT_GREEN_DURATION = 30
 
 
-def _get_link_directions(tls_id):
-    """
-    Asks SUMO which incoming edge feeds each controlled link.
-    Returns a list: index i -> "north"/"east"/"south"/"west"/None
-    """
+def _get_link_directions(tls_id, incoming_edges):
     controlled_links = traci.trafficlight.getControlledLinks(tls_id)
     directions = []
     for link_group in controlled_links:
         if not link_group:
             directions.append(None)
             continue
-        incoming_lane = link_group[0][0]            # e.g. "N2C_0"
-        incoming_edge = incoming_lane.split("_")[0]  # "N2C"
+        incoming_lane = link_group[0][0]
+        incoming_edge = incoming_lane.split("_")[0]
         direction = next(
-            (d for d, e in INCOMING_EDGES.items() if e == incoming_edge),
+            (d for d, e in incoming_edges.items() if e == incoming_edge),
             None
         )
         directions.append(direction)
     return directions
 
 
-def _build_state_string(link_directions, green_direction=None, yellow_direction=None):
-    """Builds one phase's state string, e.g. 'GGrrrrrr'."""
+def _build_state_string(link_directions, green_direction=None,
+                         yellow_direction=None):
     chars = []
     for d in link_directions:
         if d == green_direction:
@@ -63,23 +58,35 @@ def _build_state_string(link_directions, green_direction=None, yellow_direction=
     return "".join(chars)
 
 
-def install_clockwise_program(tls_id="C"):
+def install_clockwise_program(tls_id="C", incoming_edges=None):
     """
-    Installs the 8-phase clockwise program:
-        0=N Green, 1=N Yellow, 2=E Green, 3=E Yellow,
-        4=S Green, 5=S Yellow, 6=W Green, 7=W Yellow
+    Installs India-style one-direction-at-a-time clockwise program.
 
-    Call this once right after traci.start(), every episode.
+    Parameters:
+        tls_id         - traffic light ID in SUMO
+        incoming_edges - dict mapping direction→edge_id for THIS intersection.
+                         If None, uses the single-intersection defaults.
+                         Pass the correct edges for grid intersections!
     """
-    link_directions = _get_link_directions(tls_id)
+    if incoming_edges is None:
+        incoming_edges = DEFAULT_INCOMING_EDGES
+
+    link_directions = _get_link_directions(tls_id, incoming_edges)
 
     phases = []
     for direction in CLOCKWISE_ORDER:
-        green_state = _build_state_string(link_directions, green_direction=direction)
-        phases.append(traci.trafficlight.Phase(DEFAULT_GREEN_DURATION, green_state))
-
-        yellow_state = _build_state_string(link_directions, yellow_direction=direction)
-        phases.append(traci.trafficlight.Phase(YELLOW_DURATION, yellow_state))
+        green_state = _build_state_string(
+            link_directions, green_direction=direction
+        )
+        phases.append(
+            traci.trafficlight.Phase(DEFAULT_GREEN_DURATION, green_state)
+        )
+        yellow_state = _build_state_string(
+            link_directions, yellow_direction=direction
+        )
+        phases.append(
+            traci.trafficlight.Phase(YELLOW_DURATION, yellow_state)
+        )
 
     logic = traci.trafficlight.Logic(
         programID="clockwise_india",

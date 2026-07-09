@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ROUTES FILE — 2x2 Grid
+
+  We design 3 categories of traffic that REQUIRE coordination:
+
+  CATEGORY 1: THROUGH-TRAFFIC (tests green wave coordination)
+    West→East flows that pass through TWO intersections in sequence.
+    W1→A→B→E1 and W2→C→D→E2
+    If A and B don't coordinate, these vehicles hit a red at B
+    just as they arrive from A — exactly the problem multi-agent
+    RL should learn to fix.
+
+  CATEGORY 2: NORTH-SOUTH FLOWS (tests vertical coordination)
+    N1→A→C→S1 and N2→B→D→S2
+    Same coordination need — traffic flowing down the grid.
+
+  CATEGORY 3: SHORT LOCAL FLOWS (single intersection, turning traffic)
+    These keep all 4 intersections busy independently and prevent
+    the AI from learning a trivial "always green for through-traffic"
+    shortcut.
+
+  FLOW VOLUMES (vehicles/hour):
+    Through-traffic:  300/hr  (heavy — makes coordination urgent)
+    N-S traffic:      250/hr  (medium)
+    Local turning:    150/hr  (light)
+-->
+
+<routes>
+
+    <!-- ── VEHICLE TYPE ──────────────────────────────────────────────── -->
+    <vType id="car"
+           accel="2.6" decel="4.5" sigma="0.5"
+           length="5" minGap="2.5" maxSpeed="13.89"/>
+
+    <!-- ══════════════ THROUGH-TRAFFIC ROUTES ══════════════ -->
+
+    <!-- West→East (top row): W1 → A → B → E1 -->
+    <route id="WE_top"    edges="W12A A2B B2E1"/>
+    <!-- East→West (top row): E1 → B → A → W1 -->
+    <route id="EW_top"    edges="E12B B2A A2W1"/>
+
+    <!-- West→East (bottom row): W2 → C → D → E2 -->
+    <route id="WE_bot"    edges="W22C C2D D2E2"/>
+    <!-- East→West (bottom row): E2 → D → C → W2 -->
+    <route id="EW_bot"    edges="E22D D2C C2W2"/>
+
+    <!-- ══════════════ NORTH-SOUTH ROUTES ══════════════ -->
+
+    <!-- North→South (left column): N1 → A → C → S1 -->
+    <route id="NS_left"   edges="N12A A2C C2S1"/>
+    <!-- South→North (left column): S1 → C → A → N1 -->
+    <route id="SN_left"   edges="S12C C2A A2N1"/>
+
+    <!-- North→South (right column): N2 → B → D → S2 -->
+    <route id="NS_right"  edges="N22B B2D D2S2"/>
+    <!-- South→North (right column): S2 → D → B → N2 -->
+    <route id="SN_right"  edges="S22D D2B B2N2"/>
+
+    <!-- ══════════════ LOCAL ROUTES (single intersection) ══════════════ -->
+
+    <!-- Intersection A local -->
+    <route id="A_WN" edges="W12A A2N1"/>   <!-- W→A→N turn -->
+    <route id="A_NE" edges="N12A A2B"/>    <!-- N→A→E (partial) -->
+
+    <!-- Intersection B local -->
+    <route id="B_NW" edges="N22B B2A"/>    <!-- N→B→W (partial) -->
+    <route id="B_ES" edges="E12B B2D"/>    <!-- E→B→S (partial) -->
+
+    <!-- Intersection C local -->
+    <route id="C_WS" edges="W22C C2S1"/>   <!-- W→C→S turn -->
+    <route id="C_SE" edges="S12C C2D"/>    <!-- S→C→E (partial) -->
+
+    <!-- Intersection D local -->
+    <route id="D_SE" edges="S22D D2E2"/>   <!-- S→D→E turn -->
+    <route id="D_ES" edges="E22D D2S2"/>   <!-- E→D→S turn -->
+
+    <!-- ══════════════ TRAFFIC FLOWS ══════════════ -->
+
+    <!-- ── HEAVY through-traffic (500/hr): makes coordination urgent ── -->
+    <flow id="f_WE_top"   route="WE_top"   begin="0" end="3600"
+          vehsPerHour="300" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_EW_top"   route="EW_top"   begin="0" end="3600"
+          vehsPerHour="300" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_WE_bot"   route="WE_bot"   begin="0" end="3600"
+          vehsPerHour="300" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_EW_bot"   route="EW_bot"   begin="0" end="3600"
+          vehsPerHour="300" type="car" departLane="best" departSpeed="max"/>
+
+    <!-- ── MEDIUM N-S traffic (400/hr) ── -->
+    <flow id="f_NS_left"  route="NS_left"  begin="0" end="3600"
+          vehsPerHour="250" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_SN_left"  route="SN_left"  begin="0" end="3600"
+          vehsPerHour="250" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_NS_right" route="NS_right" begin="0" end="3600"
+          vehsPerHour="250" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_SN_right" route="SN_right" begin="0" end="3600"
+          vehsPerHour="250" type="car" departLane="best" departSpeed="max"/>
+
+    <!-- ── LIGHT local/turning traffic (150/hr) ── -->
+    <flow id="f_A_WN"     route="A_WN"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_A_NE"     route="A_NE"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_B_NW"     route="B_NW"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_B_ES"     route="B_ES"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_C_WS"     route="C_WS"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_C_SE"     route="C_SE"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_D_SE"     route="D_SE"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+    <flow id="f_D_ES"     route="D_ES"     begin="0" end="3600"
+          vehsPerHour="150" type="car" departLane="best" departSpeed="max"/>
+
+</routes>
