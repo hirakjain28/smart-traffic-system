@@ -34,6 +34,8 @@ from backend.services.simulation_service import SimulationService
 from backend.services.override_service import OverrideService
 from backend.api.websocket.live_feed import manager
 from backend.api.routes import traffic, signals, override, logs
+from backend.services.grid_simulation_service import GridSimulationService
+from backend.api.websocket.live_feed import ConnectionManager
 
 
 # ── GLOBAL SERVICE INSTANCES ──────────────────────────────────────────────────
@@ -41,6 +43,8 @@ from backend.api.routes import traffic, signals, override, logs
 rl_service       = None
 sim_service      = None
 override_service = None
+grid_sim_service = None
+grid_manager = ConnectionManager()
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -85,6 +89,13 @@ async def lifespan(app: FastAPI):
     # 6. Start simulation in background thread
     sim_service.start()
 
+    # ── GRID SIMULATION (Phase 6) ────────────────────────────────────────────
+    global grid_sim_service
+    print("\n🌐 Initializing 2×2 grid simulation...")
+    grid_sim_service = GridSimulationService()
+    grid_sim_service.state.broadcast_callback = grid_manager.broadcast_sync
+    grid_sim_service.start()
+
     print("\n✅ Backend ready!")
     print(f"   API: http://{API_HOST}:{API_PORT}")
     print(f"   Docs: http://{API_HOST}:{API_PORT}/docs")
@@ -95,6 +106,8 @@ async def lifespan(app: FastAPI):
     # ── SHUTDOWN ──────────────────────────────────────────────────────────────
     print("\n🛑 Shutting down...")
     sim_service.stop()
+    if grid_sim_service:
+        grid_sim_service.stop()
     print("✅ Shutdown complete")
 
 
@@ -164,6 +177,30 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         print(f"WebSocket error: {e}")
         manager.disconnect(websocket)
+
+@app.websocket("/ws/grid-live")
+async def grid_websocket_endpoint(websocket: WebSocket):
+    await grid_manager.connect(websocket)
+    try:
+        if grid_sim_service:
+            import json
+            await websocket.send_text(json.dumps({
+                "type": "initial_state",
+                "data": grid_sim_service.state.get_snapshot(),
+            }))
+        while True:
+            data = await websocket.receive_text()
+            if data == "ping":
+                await websocket.send_text('{"type": "pong"}')
+    except WebSocketDisconnect:
+        grid_manager.disconnect(websocket)
+
+
+@app.get("/api/grid/status")
+async def get_grid_status():
+    if not grid_sim_service:
+        return {"message": "Grid simulation not running"}
+    return grid_sim_service.state.get_snapshot()
 
 
 # ── ROOT ENDPOINT ─────────────────────────────────────────────────────────────

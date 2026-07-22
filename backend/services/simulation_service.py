@@ -181,23 +181,25 @@ class SimulationService:
             "--waiting-time-memory", "1000",
             "--time-to-teleport", "-1",
         ]
-        traci.start(sumo_cmd)
+        conn = traci.start(sumo_cmd, label="single")
+        self.conn = conn
         self.state.update(is_running=True)
+
 
         install_clockwise_program(TRAFFIC_LIGHT_ID)
 
         current_phase  = 0
         time_in_phase  = 0
         step           = 0
-        traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, 0)
+        conn.trafficlight.setPhase(TRAFFIC_LIGHT_ID, 0)
 
         for _ in range(5):
-            traci.simulationStep()
+            conn.simulationStep()
 
         while step < 360 and not self._stop_event.is_set():
 
-            state_vector = get_state(traci, current_phase, time_in_phase)
-            raw_state    = get_raw_state(traci)
+            state_vector = get_state(conn, current_phase, time_in_phase)
+            raw_state    = get_raw_state(conn)
 
             with self.state._lock:
                 override_active = (
@@ -212,7 +214,7 @@ class SimulationService:
             # ── DECIDE ACTION ─────────────────────────────────────────────────
             if override_active:
                 forced_phase = self.state.override_phase
-                traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, forced_phase)
+                conn.trafficlight.setPhase(TRAFFIC_LIGHT_ID, forced_phase)
                 current_phase = forced_phase
                 time_in_phase = 0
                 action        = ACTION_KEEP
@@ -242,23 +244,23 @@ class SimulationService:
             # ── APPLY TO TRAFFIC LIGHT ────────────────────────────────────────
             if validated_action == ACTION_SWITCH and current_phase in GREEN_PHASES:
                 yellow_phase = current_phase + 1
-                traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, yellow_phase)
+                conn.trafficlight.setPhase(TRAFFIC_LIGHT_ID, yellow_phase)
                 current_phase = yellow_phase
                 time_in_phase = 0
 
             # ── ADVANCE SUMO ───────────────────────────────────────────────────
             for _ in range(DELTA_TIME):
-                traci.simulationStep()
+                conn.simulationStep()
                 time_in_phase += 1
                 if current_phase in YELLOW_PHASES and time_in_phase >= YELLOW_DURATION:
                     green_before_yellow = current_phase - 1
                     next_green = NEXT_GREEN_PHASE[green_before_yellow]
-                    traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, next_green)
+                    conn.trafficlight.setPhase(TRAFFIC_LIGHT_ID, next_green)
                     current_phase = next_green
                     time_in_phase = 0
 
             # ── CALCULATE REWARD + SUGGESTION ─────────────────────────────────
-            new_raw_state        = get_raw_state(traci)
+            new_raw_state        = get_raw_state(conn)
             reward, reward_info  = calculate_reward(new_raw_state)
 
             suggestion = None
@@ -314,5 +316,5 @@ class SimulationService:
 
             step += 1
 
-        traci.close()
+        conn.close()
         self.state.update(is_running=False)
