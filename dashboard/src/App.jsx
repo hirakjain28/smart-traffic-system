@@ -26,8 +26,12 @@ import TrafficChart     from './components/TrafficChart'
 import AISuggestion     from './components/AISuggestion'
 import OverridePanel    from './components/OverridePanel'
 import DecisionLog      from './components/DecisionLog'
+import { useState } from 'react'
+import GridDashboard from './GridDashboard'
 
 export default function App() {
+  const [view, setView] = useState('single') 
+
   const {
     traffic, history, suggestion,
     decisions, summary, connected,
@@ -36,6 +40,20 @@ export default function App() {
 
   const handleModeChange = (newMode) => {
     setTraffic(prev => ({ ...prev, ai_mode: newMode }))
+  }
+
+  if (view === 'grid') {
+    return (
+      <>
+        <button
+          onClick={() => setView('single')}
+          className="fixed top-2 right-2 z-50 text-xs bg-accent text-navy px-3 py-1 rounded"
+        >
+          ← Single View
+        </button>
+        <GridDashboard/>
+      </>
+    )
   }
 
   return (
@@ -47,6 +65,16 @@ export default function App() {
         connected={connected}
         onModeChange={handleModeChange}
       />
+
+      <div className="px-4 pt-2">
+        <button
+          onClick={() => setView('grid')}
+          className="text-xs bg-elevated hover:bg-accent hover:text-navy text-muted
+                     px-3 py-1.5 rounded transition-colors"
+        >
+          View Grid →
+        </button>
+      </div>
 
       {/* ── MAIN CONTENT ────────────────────────────────────────── */}
       <main className="flex-1 p-4 grid grid-cols-12 gap-4 max-w-screen-2xl mx-auto w-full">

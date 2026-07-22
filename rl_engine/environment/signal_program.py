@@ -28,7 +28,8 @@ YELLOW_DURATION        = 3
 DEFAULT_GREEN_DURATION = 30
 
 
-def _get_link_directions(tls_id, incoming_edges):
+def _get_link_directions(tls_id, incoming_edges, conn=None):
+    conn = conn or traci
     controlled_links = traci.trafficlight.getControlledLinks(tls_id)
     directions = []
     for link_group in controlled_links:
@@ -58,7 +59,7 @@ def _build_state_string(link_directions, green_direction=None,
     return "".join(chars)
 
 
-def install_clockwise_program(tls_id="C", incoming_edges=None):
+def install_clockwise_program(tls_id="C", incoming_edges=None, conn=None):
     """
     Installs India-style one-direction-at-a-time clockwise program.
 
@@ -68,6 +69,7 @@ def install_clockwise_program(tls_id="C", incoming_edges=None):
                          If None, uses the single-intersection defaults.
                          Pass the correct edges for grid intersections!
     """
+    conn = conn or traci
     if incoming_edges is None:
         incoming_edges = DEFAULT_INCOMING_EDGES
 
@@ -88,11 +90,11 @@ def install_clockwise_program(tls_id="C", incoming_edges=None):
             traci.trafficlight.Phase(YELLOW_DURATION, yellow_state)
         )
 
-    logic = traci.trafficlight.Logic(
+    logic = conn.trafficlight.Logic(
         programID="clockwise_india",
         type=0,
         currentPhaseIndex=0,
         phases=phases,
     )
-    traci.trafficlight.setProgramLogic(tls_id, logic)
-    traci.trafficlight.setPhase(tls_id, 0)
+    conn.trafficlight.setProgramLogic(tls_id, logic)
+    conn.trafficlight.setPhase(tls_id, 0)
