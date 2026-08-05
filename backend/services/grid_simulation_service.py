@@ -171,20 +171,22 @@ class GridSimulationService:
             except Exception as e:
                 print(f"❌ Grid sim error: {e}")
                 import traceback; traceback.print_exc()
-                try: traci.close()
+                try:
+                    traci.getConnection("grid").close()
                 except Exception: pass
                 time.sleep(3)
 
     def _run_episode(self):
-        conn = traci.start([
+        traci.start([
             "sumo", "--net-file", NET_FILE, "--route-files", ROUTE_FILE,
             "--no-step-log", "true", "--waiting-time-memory", "1000",
             "--time-to-teleport", "-1",
-        ])
+        ], label="grid")
+        conn = traci.getConnection("grid")
         self.conn = conn
 
         for tl_id in INTERSECTIONS:
-            install_clockwise_program(tl_id, incoming_edges=INCOMING[tl_id])
+            install_clockwise_program(tl_id, incoming_edges=INCOMING[tl_id], conn = conn)
         for _ in range(5):
             conn.simulationStep()
 

@@ -46,6 +46,9 @@ export default function AISuggestion({ suggestion, aiMode }) {
                  : 'bg-accent/10 border border-accent/20'
       }`}>
         <div className="flex items-center gap-2 mb-1">
+          <span className="text-[10px] uppercase tracking-wide text-muted">
+            AI prefers
+          </span>
           <span className={`text-lg font-bold font-mono ${
             isSwitch ? 'text-sgreen' : 'text-accent'
           }`}>
@@ -60,7 +63,14 @@ export default function AISuggestion({ suggestion, aiMode }) {
 
       {/* Q-value bars */}
       <div className="space-y-2">
-        <p className="text-xs text-muted mb-2">Q-values (higher = better)</p>
+        <p className="text-xs text-muted mb-2">Q-values (higher = better)
+          AI's raw preference (higher = better)
+        </p>
+        <p className="text-[10px] text-muted/70 mb-2 leading-snug">
+          This shows what the AI would choose with no restrictions.
+          The actual signal always respects the minimum green-time rule
+          before switching.
+        </p>  
 
         {/* KEEP bar */}
         <div>

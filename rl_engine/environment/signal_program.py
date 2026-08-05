@@ -73,7 +73,7 @@ def install_clockwise_program(tls_id="C", incoming_edges=None, conn=None):
     if incoming_edges is None:
         incoming_edges = DEFAULT_INCOMING_EDGES
 
-    link_directions = _get_link_directions(tls_id, incoming_edges)
+    link_directions = _get_link_directions(tls_id, incoming_edges, conn=conn)
 
     phases = []
     for direction in CLOCKWISE_ORDER:

@@ -111,7 +111,7 @@ class RLService:
             q_values = self.model.policy.q_net(obs_tensor).numpy()[0]
 
         best_action = int(np.argmax(q_values))
-        confidence  = abs(q_values[0] - q_values[1]) / (abs(max(q_values)) + 0.001)
+        confidence = min(abs(q_values[0] - q_values[1]) / 5.0, 1.0)
         confidence  = min(float(confidence), 1.0)
 
         # Build human readable reason
@@ -130,6 +130,16 @@ class RLService:
                 f"Hold recommended — current phase is managing "
                 f"traffic efficiently"
             )
+            
+        raw_keep   = float(q_values[ACTION_KEEP])
+        raw_switch = float(q_values[ACTION_SWITCH])
+        
+        worst  = min(raw_keep, raw_switch)
+        best   = max(raw_keep, raw_switch)
+        spread = max(best - worst, 0.01)
+        
+        def normalize(v):
+            return round(((v - worst) / spread) * 10, 2)
 
         return {
             "action":     "SWITCH" if best_action == ACTION_SWITCH else "KEEP",
@@ -137,7 +147,11 @@ class RLService:
             "reason":     reason,
             "total_wait": round(sum(wait.values()), 1),
             "q_values":   {
-                "keep":   round(float(q_values[ACTION_KEEP]),   3),
-                "switch": round(float(q_values[ACTION_SWITCH]), 3),
+                "keep":   normalize(raw_keep),
+                "switch": normalize(raw_switch),
+            },
+            "q_values_raw": {
+                "keep":   round(raw_keep, 2),
+                "switch": round(raw_switch, 2),
             }
         }

@@ -1,0 +1,19 @@
+# Simulation / RL
+sumo-rl
+stable-baselines3
+gymnasium
+torch
+numpy
+matplotlib
+
+# Training progress / logging
+tensorboard
+tqdm
+rich
+
+# Backend
+fastapi
+uvicorn
+sqlalchemy
+python-dotenv
+websockets

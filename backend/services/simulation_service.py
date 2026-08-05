@@ -162,7 +162,7 @@ class SimulationService:
                 import traceback
                 traceback.print_exc()
                 try:
-                    traci.close()
+                    traci.getConnection("single").close()
                 except Exception:
                     pass
                 time.sleep(3)
@@ -181,7 +181,8 @@ class SimulationService:
             "--waiting-time-memory", "1000",
             "--time-to-teleport", "-1",
         ]
-        conn = traci.start(sumo_cmd, label="single")
+        traci.start(sumo_cmd, label="single")
+        conn = traci.getConnection("single")
         self.conn = conn
         self.state.update(is_running=True)
 

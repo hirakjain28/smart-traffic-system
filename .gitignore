@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+
+# Database
+*.sqlite
+*.db
+
+# Logs
+logs/
+*.log
+
+# RL models
+rl_engine/models/*.zip
+data/logs/
+
+# Node
+node_modules/
+
+# VS Code
+.vscode/
+
+# Environment
+.env
