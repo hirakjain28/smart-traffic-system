@@ -90,11 +90,12 @@ async def lifespan(app: FastAPI):
     sim_service.start()
 
     # ── GRID SIMULATION (Phase 6) ────────────────────────────────────────────
-    global grid_sim_service
-    print("\n🌐 Initializing 2×2 grid simulation...")
-    grid_sim_service = GridSimulationService()
-    grid_sim_service.state.broadcast_callback = grid_manager.broadcast_sync
-    grid_sim_service.start()
+    if os.environ.get("ENABLE_GRID", "true").lower() == "true":
+        global grid_sim_service
+        print("\n🌐 Initializing 2×2 grid simulation...")
+        grid_sim_service = GridSimulationService()
+        grid_sim_service.state.broadcast_callback = grid_manager.broadcast_sync
+        grid_sim_service.start()
 
     print("\n✅ Backend ready!")
     print(f"   API: http://{API_HOST}:{API_PORT}")

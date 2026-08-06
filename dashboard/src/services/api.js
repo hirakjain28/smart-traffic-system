@@ -12,7 +12,7 @@
 
 import axios from 'axios'
 
-const BASE_URL = 'https://smart-traffic-system-tnyp.onrender.com'
+const BASE_URL = 'https://smart-traffic-system-mbp3.onrender.com'
 
 // Create axios instance with default config
 const api = axios.create({

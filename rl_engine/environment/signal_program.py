@@ -30,7 +30,7 @@ DEFAULT_GREEN_DURATION = 30
 
 def _get_link_directions(tls_id, incoming_edges, conn=None):
     conn = conn or traci
-    controlled_links = traci.trafficlight.getControlledLinks(tls_id)
+    controlled_links = conn.trafficlight.getControlledLinks(tls_id)
     directions = []
     for link_group in controlled_links:
         if not link_group:
