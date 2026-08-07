@@ -50,7 +50,7 @@ USE_GUI     = False  # set True to see SUMO window (slow)
 
 # ── API SETTINGS ──────────────────────────────────────────────────────────────
 API_HOST = "0.0.0.0"
-API_PORT = 8000
+API_PORT = int(os.environ.get("PORT", 8000))
 
 # ── DATABASE SETTINGS ─────────────────────────────────────────────────────────
 DB_PATH = str(ROOT_DIR / "data/traffic_db.sqlite")

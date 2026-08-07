@@ -56,6 +56,9 @@ from backend.database.crud import save_traffic_snapshot, save_signal_decision
 
 
 
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+
 class SimulationState:
     """Shared state between the simulation thread and the API thread."""
 
@@ -178,7 +181,7 @@ class SimulationService:
             "--net-file",    NET_FILE,
             "--route-files", ROUTE_FILE,
             "--no-step-log", "true",
-            "--waiting-time-memory", "1000",
+            "--waiting-time-memory", "300",
             "--time-to-teleport", "-1",
         ]
         traci.start(sumo_cmd, label="single")
