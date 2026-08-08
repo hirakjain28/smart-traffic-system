@@ -128,7 +128,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000",
                    "http://localhost:5173",
-                   "https://smart-traffic-system-sigma.vercel.app/"],   # React dev server ports
+                   "https://smart-traffic-system-sigma.vercel.app"],   # React dev server ports
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
