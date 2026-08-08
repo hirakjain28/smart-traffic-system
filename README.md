@@ -238,10 +238,5 @@ python rl_engine/training/evaluate_multi_transfer.py  # 2×2 grid
 Built as a self-directed learning project to go deep on reinforcement learning, simulation, and full-stack systems engineering — from a single Python script reading traffic data, all the way to a deployed, cloud-hosted, real-time AI dashboard.
 
 **Author:** Hirak Jain
-**Contact:** [LinkedIn](#) · [GitHub](#)
+**Contact:** [LinkedIn](www.linkedin.com/in/hirakjain28) · [GitHub](https://github.com/hirakjain28)
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
