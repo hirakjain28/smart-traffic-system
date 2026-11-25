@@ -120,6 +120,11 @@ class TrafficEnv(gym.Env):
         # ── FAIRNESS CONSTRAINT ───────────────────────────────────────────────
         self.constraint = FairnessConstraint()
 
+        # ── VEHICLE LEVEL WAIT TRACKING ───────────────────────────────────────
+        self.vehicle_wait_tracker = {}     # active veh_id -> last accumulated waiting time
+        self.completed_veh_count = 0       # number of vehicles that completed their trip
+        self.total_completed_wait = 0.0    # sum of wait time of all completed vehicles
+
         # ── EPISODE HISTORY (for logging/dashboard later) ─────────────────────
         self.history = []
 
@@ -164,6 +169,9 @@ class TrafficEnv(gym.Env):
         self.step_count     = 0
         self.episode_reward = 0.0
         self.history        = []
+        self.vehicle_wait_tracker = {}
+        self.completed_veh_count = 0
+        self.total_completed_wait = 0.0
 
         # Set traffic light to phase 0 (NS Green) at start
         traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, 0)
@@ -223,6 +231,12 @@ class TrafficEnv(gym.Env):
             traci.simulationStep()
             self.time_in_phase += 1  # count up time in current phase
 
+            # Track completed vehicles that exited this second
+            for vid in traci.simulation.getArrivedIDList():
+                final_wait = self.vehicle_wait_tracker.pop(vid, 0.0)
+                self.completed_veh_count += 1
+                self.total_completed_wait += final_wait
+
             # Handle automatic yellow phase transition
             # If we're in a yellow phase and time is up → switch to next green
             if self.current_phase in YELLOW_PHASES:
@@ -232,6 +246,10 @@ class TrafficEnv(gym.Env):
                     traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, next_green)
                     self.current_phase = next_green
                     self.time_in_phase = 0
+
+        # Update wait times for all currently active vehicles in the network
+        for vid in traci.vehicle.getIDList():
+            self.vehicle_wait_tracker[vid] = traci.vehicle.getAccumulatedWaitingTime(vid)
 
         # ── STEP 4: READ NEW STATE ────────────────────────────────────────────
         raw_state = get_raw_state(traci)
@@ -246,16 +264,29 @@ class TrafficEnv(gym.Env):
         terminated = (self.step_count >= self.max_steps)
         truncated  = False
 
-        # ── STEP 7: BUILD INFO DICT ───────────────────────────────────────────
+        # ── STEP 7: BUILD VEHICLE METRICS & INFO DICT ─────────────────────────
+        total_seen = self.completed_veh_count + len(self.vehicle_wait_tracker)
+        total_accumulated_wait = self.total_completed_wait + sum(self.vehicle_wait_tracker.values())
+        veh_avg_wait = (total_accumulated_wait / total_seen) if total_seen > 0 else 0.0
+
+        total_halting = sum(raw_state["queue"].values())
+        instant_veh_avg_wait = (reward_info["total_wait"] / total_halting) if total_halting > 0 else 0.0
+
         info = {
-            "step":            self.step_count,
-            "action_taken":    get_action_meaning(validated_action),
-            "action_overridden": override_reason is not None,
-            "override_reason": override_reason,
-            "current_phase":   self.current_phase,
-            "time_in_phase":   self.time_in_phase,
-            "episode_reward":  self.episode_reward,
-            "traffic":         raw_state,
+            "step":                 self.step_count,
+            "action_taken":         get_action_meaning(validated_action),
+            "action_overridden":    override_reason is not None,
+            "override_reason":      override_reason,
+            "current_phase":        self.current_phase,
+            "time_in_phase":        self.time_in_phase,
+            "episode_reward":       self.episode_reward,
+            "traffic":              raw_state,
+            "total_wait":           reward_info["total_wait"],
+            "system_total_wait":    reward_info["total_wait"],
+            "veh_avg_wait":         round(veh_avg_wait, 2),
+            "instant_veh_avg_wait": round(instant_veh_avg_wait, 2),
+            "vehicles_served":      total_seen,
+            "vehicles_completed":   self.completed_veh_count,
             **reward_info,
         }
 
@@ -264,6 +295,7 @@ class TrafficEnv(gym.Env):
             "step": self.step_count,
             "reward": reward,
             "total_wait": reward_info["total_wait"],
+            "veh_avg_wait": round(veh_avg_wait, 2),
             "phase": self.current_phase,
         })
 

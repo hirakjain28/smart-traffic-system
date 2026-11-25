@@ -20,6 +20,14 @@ LIFESPAN:
 
 import sys
 import os
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import asyncio

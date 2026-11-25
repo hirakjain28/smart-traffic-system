@@ -8,15 +8,15 @@ venv/
 .venv/
 
 # Database
-*.sqlite
-*.db
+# *.sqlite
+# *.db
 
 # Logs
 logs/
 *.log
 
-# RL models
-rl_engine/models/*.zip
+# # RL models
+# rl_engine/models/*.zip
 data/logs/
 
 # Node

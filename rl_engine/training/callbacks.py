@@ -102,9 +102,12 @@ class TrafficTrainingCallback(BaseCallback):
         if done:
             self._episode_count += 1
 
-            # Calculate episode statistics
-            avg_wait   = np.mean(self._episode_waits) if self._episode_waits else 0.0
-            total_wait = np.sum(self._episode_waits)  if self._episode_waits else 0.0
+            # Calculate episode statistics: prefer true vehicle average wait if available
+            if "veh_avg_wait" in info:
+                avg_wait = float(info["veh_avg_wait"])
+            else:
+                avg_wait = float(np.mean(self._episode_waits)) if self._episode_waits else 0.0
+            total_wait = float(np.sum(self._episode_waits))  if self._episode_waits else 0.0
 
             # Get current epsilon from the model
             epsilon = self.model.exploration_rate

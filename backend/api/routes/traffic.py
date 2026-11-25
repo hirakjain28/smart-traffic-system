@@ -112,10 +112,17 @@ async def get_traffic_summary(db: Session = Depends(get_db)):
     total_waits  = [s.total_wait  for s in snapshots]
     total_queues = [s.total_queue for s in snapshots]
 
+    # Calculate realistic per-vehicle waiting times (seconds per waiting vehicle)
+    veh_waits = [s.total_wait / s.total_queue for s in snapshots if s.total_queue and s.total_queue > 0]
+    avg_veh_wait = round(sum(veh_waits) / len(veh_waits), 1) if veh_waits else 0.0
+    max_veh_wait = round(max(veh_waits), 1) if veh_waits else 0.0
+
     return {
         "total_snapshots": len(snapshots),
-        "avg_wait":   round(sum(total_waits)  / len(total_waits),  1),
-        "max_wait":   round(max(total_waits),  1),
-        "avg_queue":  round(sum(total_queues) / len(total_queues), 1),
-        "max_queue":  max(total_queues),
+        "avg_wait":        avg_veh_wait,  # Realistic per-vehicle wait in seconds (e.g. 15-25s)
+        "max_wait":        max_veh_wait,  # Realistic per-vehicle peak wait
+        "system_avg_wait": round(sum(total_waits) / len(total_waits), 1),
+        "system_max_wait": round(max(total_waits), 1),
+        "avg_queue":       round(sum(total_queues) / len(total_queues), 1),
+        "max_queue":       max(total_queues),
     }

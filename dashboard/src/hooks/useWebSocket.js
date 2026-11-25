@@ -18,7 +18,7 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 
-const WS_URL = 'wss://smart-traffic-system-mbp3.onrender.com/ws/live'
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/live'
 const RECONNECT_DELAY = 3000   // 3 seconds before reconnecting
 const PING_INTERVAL   = 30000  // 30 seconds between pings
 

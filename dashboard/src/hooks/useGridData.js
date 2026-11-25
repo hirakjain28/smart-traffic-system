@@ -1,7 +1,7 @@
 // src/hooks/useGridData.js
 import { useState, useEffect, useCallback } from 'react'
 
-const WS_URL = 'wss://smart-traffic-system-mbp3.onrender.com/ws/grid-live'
+const WS_URL = import.meta.env.VITE_GRID_WS_URL || 'ws://localhost:8000/ws/grid-live'
 
 const EMPTY_INTERSECTION = {
   phase: 0, phase_name: 'Loading...', time_in_phase: 0,

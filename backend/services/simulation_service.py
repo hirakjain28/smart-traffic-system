@@ -227,8 +227,13 @@ class SimulationService:
                 action       = self.rl_service.predict(state_vector)
                 action_label = get_action_meaning(action)
             else:
-                action       = ACTION_KEEP
-                action_label = "MANUAL_KEEP"
+                # Fixed timer baseline: standard 30s per green phase
+                if time_in_phase >= 30:
+                    action       = ACTION_SWITCH
+                    action_label = "FIXED_30S_SWITCH"
+                else:
+                    action       = ACTION_KEEP
+                    action_label = "FIXED_30S_KEEP"
 
             # ── APPLY FAIRNESS CONSTRAINTS ────────────────────────────────────
             if not override_active:
